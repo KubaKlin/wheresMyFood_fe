@@ -126,7 +126,7 @@ const Statistics = () => {
                     </Typography>
                   </Stack>
                   <Chip
-                    label={`Qty: ${dish.quantity}`}
+                    label={`Quantity: ${dish.quantity}`}
                     aria-label={`Quantity ${dish.quantity}`}
                   />
                 </Box>

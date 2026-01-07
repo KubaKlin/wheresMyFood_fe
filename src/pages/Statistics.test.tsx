@@ -33,6 +33,6 @@ describe('the Statistics page', () => {
 
     expect(screen.getByText(/Top 3 ordered dishes/i)).toBeInTheDocument();
     expect(screen.getByText('Pizza')).toBeInTheDocument();
-    expect(screen.getByText(/Qty: 5/i)).toBeInTheDocument();
+    expect(screen.getByText(/Quantity: 5/i)).toBeInTheDocument();
   });
 });
