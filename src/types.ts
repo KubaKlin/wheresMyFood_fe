@@ -72,3 +72,24 @@ export interface PublicOrderStatusResponse {
   additionalInfo?: string;
   items: OrderItem[];
 }
+
+export type StatisticsRange = 'today' | '7d' | '30d';
+
+export interface TopDishStatistic {
+  dishId: number;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+export interface StatisticsRangeOverview {
+  topDishes: TopDishStatistic[];
+  completedOrders: number;
+  moneyEarned: number;
+}
+
+export type StatisticsOverviewResponse = {
+  today: StatisticsRangeOverview;
+  '7d': StatisticsRangeOverview;
+  '30d': StatisticsRangeOverview;
+};

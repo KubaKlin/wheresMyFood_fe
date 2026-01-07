@@ -9,6 +9,7 @@ import Dishes from '../pages/Dishes';
 import OrdersCurrent from '../pages/OrdersCurrent';
 import OrdersCompleted from '../pages/OrdersCompleted';
 import OrderDetails from '../pages/OrderDetails';
+import Statistics from '../pages/Statistics';
 
 const AppContent = () => {
   return (
@@ -19,7 +20,11 @@ const AppContent = () => {
           <Routes>
             <Route
               path="/"
-              element={<Navigate to="/orders/current" replace />}
+              element={
+                <PrivateRoute>
+                  <Statistics />
+                </PrivateRoute>
+              }
             />
             <Route
               path="/sign-up"

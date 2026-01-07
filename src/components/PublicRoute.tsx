@@ -24,7 +24,7 @@ const PublicRoute = ({ children }: PublicRouteProps) => {
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/orders/current" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;

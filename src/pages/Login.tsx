@@ -36,7 +36,7 @@ const Login = () => {
     try {
       const restaurant = await login({ email, password });
       handleLoginSuccess(restaurant);
-      navigate('/orders/current');
+      navigate('/');
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Login failed';

@@ -17,7 +17,7 @@ const NavBar = () => {
         <Button
           color="inherit"
           component={Link}
-          to={isAuthenticated ? '/orders/current' : '/login'}
+          to={isAuthenticated ? '/' : '/login'}
           aria-label="Go to home"
         >
           Where’s My Food
@@ -27,6 +27,14 @@ const NavBar = () => {
 
         {isAuthenticated ? (
           <>
+            <Button
+              color="inherit"
+              component={Link}
+              to="/"
+              aria-label="Go to statistics"
+            >
+              Statistics
+            </Button>
             <Button
               color="inherit"
               component={Link}
