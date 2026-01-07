@@ -47,7 +47,7 @@ const CreateOrderDialog = ({
         <DialogContent>
           <Stack spacing={2} pt={1}>
             <TextField
-              label="Order name"
+              label="Order name (eg. table 5)"
               value={formState.name}
               onChange={onNameChange}
               required
@@ -56,7 +56,7 @@ const CreateOrderDialog = ({
               autoFocus
             />
             <TextField
-              label="Additional info"
+              label="Additional info (eg. takeout)"
               value={formState.additionalInfo}
               onChange={onAdditionalInfoChange}
               fullWidth
