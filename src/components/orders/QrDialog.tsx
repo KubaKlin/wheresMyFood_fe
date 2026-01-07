@@ -31,9 +31,8 @@ const resolveUrl = (maybeUrl: string): string => {
 
 const getQrImageUrl = (payload: string): string => {
   const value = resolveUrl(payload);
-  return `https://chart.googleapis.com/chart?cht=qr&chs=320x320&chl=${encodeURIComponent(
-    value,
-  )}`;
+  // Google Chart Image API dedicated QR image endpoint.
+  return `https://quickchart.io/qr?text=${encodeURIComponent(value)}&size=320`;
 };
 
 const QrDialog = ({
@@ -44,6 +43,8 @@ const QrDialog = ({
   qrPayload,
   onClose,
 }: QrDialogProps) => {
+  const statusUrl = qrData?.statusUrl ?? qrData?.qrPayload ?? '';
+
   return (
     <Dialog
       open={open}
@@ -79,12 +80,27 @@ const QrDialog = ({
                 src={getQrImageUrl(qrPayload)}
                 alt="Order status QR code"
                 sx={{ width: 320, height: 320, maxWidth: '100%' }}
+                onError={(event) => {
+                  // Hide broken image icon; link below remains usable.
+                  (event.currentTarget as HTMLImageElement).style.display = 'none';
+                }}
               />
             </Box>
           ) : null}
         </Stack>
       </DialogContent>
       <DialogActions>
+        <Button
+          variant="contained"
+          component="a"
+          href={resolveUrl(statusUrl)}
+          target="_blank"
+          rel="noreferrer"
+          disabled={!statusUrl}
+          aria-label="Open status page"
+        >
+          Open
+        </Button>
         <Button onClick={onClose} aria-label="Close QR dialog">
           Close
         </Button>
