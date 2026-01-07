@@ -6,15 +6,15 @@ import {
 } from './orderStatus';
 
 describe('the orderStatus helpers', () => {
-  it('it toggles IN_PROGRESS -> READY_TO_TAKE', () => {
+  it('toggles IN_PROGRESS -> READY_TO_TAKE', () => {
     expect(getNextOrderStatus('IN_PROGRESS')).toBe('READY_TO_TAKE');
   });
 
-  it('it toggles READY_TO_TAKE -> IN_PROGRESS', () => {
+  it('toggles READY_TO_TAKE -> IN_PROGRESS', () => {
     expect(getNextOrderStatus('READY_TO_TAKE')).toBe('IN_PROGRESS');
   });
 
-  it('it returns labels', () => {
+  it('returns labels', () => {
     expect(getOrderStatusLabel('IN_PROGRESS')).toBeTruthy();
     expect(getOrderStatusLabel('READY_TO_TAKE')).toBeTruthy();
     expect(getOrderStatusActionLabel('IN_PROGRESS')).toBeTruthy();

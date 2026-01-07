@@ -30,7 +30,7 @@ vi.mock('../hooks/useOrdersCurrentPage', () => ({
 }));
 
 describe('OrdersCurrent page', () => {
-  it('it renders list header and an order', () => {
+  it('renders list header and an order', () => {
     renderWithProviders(<OrdersCurrent />);
     expect(screen.getByText('Current Orders')).toBeInTheDocument();
     expect(screen.getByText('Order A')).toBeInTheDocument();

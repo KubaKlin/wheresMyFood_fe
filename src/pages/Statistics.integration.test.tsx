@@ -15,7 +15,7 @@ describe('the Statistics (integration)', () => {
     vi.resetAllMocks();
   });
 
-  it('it loads overview and switches range', async () => {
+  it('loads overview and switches range', async () => {
     api.getStatisticsOverview.mockResolvedValue({
       today: {
         topDishes: [{ dishId: 1, name: 'Burger', price: 25, quantity: 2 }],
@@ -59,5 +59,3 @@ describe('the Statistics (integration)', () => {
     expect(screen.getByText(/999/i)).toBeInTheDocument();
   });
 });
-
-

@@ -21,7 +21,7 @@ vi.mock('../hooks/useStatisticsPage', () => ({
 }));
 
 describe('the Statistics page', () => {
-  it('it renders stats cards and top dishes', () => {
+  it('renders stats cards and top dishes', () => {
     renderWithProviders(<Statistics />);
 
     expect(screen.getByText('Statistics')).toBeInTheDocument();

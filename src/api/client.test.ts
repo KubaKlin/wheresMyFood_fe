@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { apiFetch } from './client';
 
 describe('the apiFetch function', () => {
-  it('it returns parsed JSON when response is ok', async () => {
+  it('returns parsed JSON when response is ok', async () => {
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ ok: true }), {
         status: 200,
@@ -20,7 +20,7 @@ describe('the apiFetch function', () => {
     );
   });
 
-  it('it throws message from JSON error payload (string)', async () => {
+  it('throws message from JSON error payload (string)', async () => {
     vi.stubEnv('VITE_API_BASE_URL', 'http://api.local');
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ message: 'Nope' }), {
