@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import { render } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { AuthContext } from '../AuthContext';
+import { AuthContext } from '../auth/AuthContext';
 import type { Restaurant } from '../types';
 
 type RenderWithProvidersOptions = {

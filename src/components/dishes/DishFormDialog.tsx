@@ -8,6 +8,7 @@ import {
   Stack,
   TextField,
 } from '@mui/material';
+import { useId } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 
 type DishFormState = {
@@ -40,15 +41,17 @@ const DishFormDialog = ({
   onPriceChange,
   onSubmit,
 }: DishFormDialogProps) => {
+  const titleId = useId();
+
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      aria-labelledby="dish-form-title"
+      aria-labelledby={titleId}
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle id="dish-form-title">{title}</DialogTitle>
+      <DialogTitle id={titleId}>{title}</DialogTitle>
       <Box component="form" onSubmit={onSubmit} aria-label={ariaLabel}>
         <DialogContent>
           <Stack spacing={2} pt={1}>

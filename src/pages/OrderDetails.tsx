@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { Alert, Box, Button, Chip, Stack, Typography } from '@mui/material';
 import CenteredSpinner from '../components/common/CenteredSpinner';
+import ErrorAlert from '../components/common/ErrorAlert';
 import AddDishToOrderCard from '../components/orders/AddDishToOrderCard';
 import OrderItemsCard from '../components/orders/OrderItemsCard';
 import QrDialog from '../components/orders/QrDialog';
@@ -17,6 +18,7 @@ const OrderDetails = () => {
     order,
     dishes,
     isLoading,
+    error,
     isSaving,
     selectedDishId,
     quantity,
@@ -24,6 +26,7 @@ const OrderDetails = () => {
     qrData,
     qrError,
     qrPayload,
+    loadAll,
     handleSelectedDishChange,
     handleQuantityChange,
     handleAddDish,
@@ -34,6 +37,21 @@ const OrderDetails = () => {
 
   if (isLoading) {
     return <CenteredSpinner ariaLabel="Loading order details" />;
+  }
+
+  if (error) {
+    return (
+      <Box>
+        <ErrorAlert message={error} />
+        <Button
+          variant="outlined"
+          onClick={loadAll}
+          aria-label="Retry loading order details"
+        >
+          Retry
+        </Button>
+      </Box>
+    );
   }
 
   if (!order) {

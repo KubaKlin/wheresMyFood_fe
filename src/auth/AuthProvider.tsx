@@ -1,42 +1,18 @@
-import {
-  createContext,
-  useMemo,
-  useState,
-  useEffect,
-  useCallback,
-} from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import { getCurrentRestaurant, logout as logoutApi } from './api';
-import type { Restaurant } from './types';
+import { getCurrentRestaurant, logout as logoutApi } from '../api';
+import type { Restaurant } from '../types';
+import { AuthContext } from './AuthContext';
 
-interface AuthContextType {
-  isAuthenticated: boolean;
-  restaurant: Restaurant | null;
-  isLoading: boolean;
-  handleLoginSuccess: (restaurant: Restaurant) => void;
-  handleLogout: () => Promise<void>;
-  refreshAuth: () => Promise<void>;
-}
-
-export const AuthContext = createContext<AuthContextType>({
-  isAuthenticated: false,
-  restaurant: null,
-  isLoading: true,
-  handleLoginSuccess: () => {},
-  handleLogout: async () => {},
-  refreshAuth: async () => {},
-});
-
-interface AuthProviderProps {
+type AuthProviderProps = {
   children: ReactNode;
-}
+};
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Initialize auth state by checking with backend on mount
   useEffect(() => {
     const initializeAuth = async () => {
       try {
@@ -44,7 +20,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setRestaurant(currentRestaurant);
         setIsAuthenticated(true);
       } catch {
-        // User is not authenticated
         setRestaurant(null);
         setIsAuthenticated(false);
       } finally {
