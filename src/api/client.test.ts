@@ -1,7 +1,12 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { apiFetch } from './client';
 
 describe('the apiFetch function', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.clearAllMocks();
+  });
+
   it('returns parsed JSON when response is ok', async () => {
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ ok: true }), {
@@ -9,8 +14,7 @@ describe('the apiFetch function', () => {
         headers: { 'content-type': 'application/json' },
       }),
     );
-    // @ts-expect-error - test override
-    globalThis.fetch = fetchMock;
+    vi.stubGlobal('fetch', fetchMock);
 
     const result = await apiFetch<{ ok: boolean }>('/x', { method: 'GET' });
     expect(result.ok).toBe(true);
@@ -28,8 +32,7 @@ describe('the apiFetch function', () => {
         headers: { 'content-type': 'application/json' },
       }),
     );
-    // @ts-expect-error - test override
-    globalThis.fetch = fetchMock;
+    vi.stubGlobal('fetch', fetchMock);
 
     await expect(apiFetch('/x', { method: 'GET' })).rejects.toThrow('Nope');
   });
