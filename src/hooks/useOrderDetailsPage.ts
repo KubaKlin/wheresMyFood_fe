@@ -8,6 +8,7 @@ import {
   listDishes,
   updateOrderStatus,
 } from '../api';
+import { getUserFacingErrorMessage } from '../api/errors';
 import type {
   Dish,
   GetOrderQrResponse,
@@ -42,9 +43,7 @@ export const useOrderDetailsPage = (orderId: number) => {
       setOrder(orderStatus);
       setDishes(dishList);
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to load order';
-      setError(message);
+      setError(getUserFacingErrorMessage(error, 'Failed to load order'));
     } finally {
       setIsLoading(false);
     }
@@ -98,9 +97,7 @@ export const useOrderDetailsPage = (orderId: number) => {
       await addOrderItem(orderId, { dishId, quantity: parsedQuantity });
       await loadAll();
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to add dish to order';
-      setError(message);
+      setError(getUserFacingErrorMessage(error, 'Failed to add dish to order'));
     } finally {
       setIsSaving(false);
     }
@@ -120,11 +117,9 @@ export const useOrderDetailsPage = (orderId: number) => {
       await updateOrderStatus(orderId, nextStatus);
       await loadAll();
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Failed to update order status';
-      setError(message);
+      setError(
+        getUserFacingErrorMessage(error, 'Failed to update order status'),
+      );
     } finally {
       setIsSaving(false);
     }
@@ -139,9 +134,7 @@ export const useOrderDetailsPage = (orderId: number) => {
       const data = await getOrderQr(orderId);
       setQrData(data);
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to load QR payload';
-      setQrError(message);
+      setQrError(getUserFacingErrorMessage(error, 'Failed to load QR payload'));
     }
   }, [orderId]);
 

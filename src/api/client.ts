@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import axios from 'axios';
 
 const DEFAULT_HEADERS: Record<string, string> = {
   'Content-Type': 'application/json',
@@ -9,55 +9,93 @@ type ApiFetchOptions = {
   body?: unknown;
 };
 
+export const SERVICE_UNAVAILABLE_MESSAGE =
+  "We're sorry, currently the application is down. We are working on fixing it. Please check again soon.";
+
+type BackendErrorPayload = {
+  message?: unknown;
+};
+
+export class ApiError extends Error {
+  public readonly statusCode?: number;
+  public readonly payload?: unknown;
+
+  public constructor(
+    message: string,
+    options?: { statusCode?: number; payload?: unknown; cause?: unknown },
+  ) {
+    super(message);
+    this.name = 'ApiError';
+    this.statusCode = options?.statusCode;
+    this.payload = options?.payload;
+    if (options?.cause !== undefined) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (this as any).cause = options.cause;
+    }
+  }
+}
+
+const getBackendMessage = (payload: unknown): string | null => {
+  if (!payload || typeof payload !== 'object') return null;
+  const messageField =
+    'message' in payload ? (payload as BackendErrorPayload).message : undefined;
+
+  if (typeof messageField === 'string' && messageField.trim())
+    return messageField;
+  if (
+    Array.isArray(messageField) &&
+    messageField.length > 0 &&
+    messageField.every((m) => typeof m === 'string')
+  ) {
+    return messageField.join(', ');
+  }
+
+  return null;
+};
+
 export const apiFetch = async <TResponse>(
   path: string,
   { method, body }: ApiFetchOptions,
 ): Promise<TResponse> => {
-  if (!API_BASE_URL) {
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+  if (!apiBaseUrl) {
     throw new Error('Missing VITE_API_BASE_URL');
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    method,
-    credentials: 'include',
+  const client = axios.create({
+    baseURL: apiBaseUrl,
+    withCredentials: true,
     headers: DEFAULT_HEADERS,
-    body: body === undefined ? undefined : JSON.stringify(body),
   });
 
-  const contentType = response.headers.get('content-type') ?? '';
-  const isJson = contentType.includes('application/json');
-
-  if (!response.ok) {
-    if (isJson) {
-      const errorPayload = await response.json().catch(() => null);
-      const messageField =
-        typeof errorPayload === 'object' &&
-        errorPayload &&
-        'message' in errorPayload
-          ? (errorPayload as { message?: unknown }).message
-          : undefined;
-
-      if (typeof messageField === 'string' && messageField) {
-        throw new Error(messageField);
-      }
-
-      if (
-        Array.isArray(messageField) &&
-        messageField.every((m) => typeof m === 'string')
-      ) {
-        throw new Error(messageField.join(', '));
-      }
-
-      throw new Error('Request failed');
+  try {
+    const response = await client.request<TResponse>({
+      url: path,
+      method,
+      data: body,
+    });
+    return response.data;
+  } catch (error: unknown) {
+    if (!axios.isAxiosError(error)) {
+      throw new ApiError('Request failed', { cause: error });
     }
 
-    const errorText = await response.text().catch(() => '');
-    throw new Error(errorText || 'Request failed');
-  }
+    const statusCode = error.response?.status;
+    const payload = error.response?.data;
 
-  if (!isJson) {
-    return undefined as TResponse;
-  }
+    if (statusCode === 503) {
+      throw new ApiError(SERVICE_UNAVAILABLE_MESSAGE, {
+        statusCode,
+        payload,
+        cause: error,
+      });
+    }
 
-  return response.json();
+    const backendMessage = getBackendMessage(payload);
+    throw new ApiError(backendMessage ?? 'Request failed', {
+      statusCode,
+      payload,
+      cause: error,
+    });
+  }
 };

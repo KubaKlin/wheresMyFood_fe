@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Order } from '../types';
+import { getUserFacingErrorMessage } from '../api/errors';
 
 type LoadOrdersFn = () => Promise<Order[]>;
 
@@ -15,9 +16,7 @@ export const useOrdersListPage = (loadOrdersFn: LoadOrdersFn) => {
       const data = await loadOrdersFn();
       setOrders(data);
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to load orders';
-      setError(message);
+      setError(getUserFacingErrorMessage(error, 'Failed to load orders'));
     } finally {
       setIsLoading(false);
     }

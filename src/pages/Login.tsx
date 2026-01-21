@@ -10,6 +10,7 @@ import {
   Alert,
 } from '@mui/material';
 import { login } from '../api';
+import { getUserFacingErrorMessage } from '../api/errors';
 import { useAuth } from '../hooks/useAuth';
 
 const Login = () => {
@@ -38,9 +39,7 @@ const Login = () => {
       handleLoginSuccess(restaurant);
       navigate('/');
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Login failed';
-      setError(errorMessage);
+      setError(getUserFacingErrorMessage(error, 'Login failed'));
     } finally {
       setIsLoading(false);
     }
