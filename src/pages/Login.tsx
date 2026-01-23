@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   TextField,
   Button,
@@ -8,18 +8,32 @@ import {
   Typography,
   Stack,
   Alert,
+  ToggleButton,
+  ToggleButtonGroup,
 } from '@mui/material';
-import { login } from '../api';
+import { loginRestaurant, loginUser } from '../api';
 import { getUserFacingErrorMessage } from '../api/errors';
 import { useAuth } from '../hooks/useAuth';
 
+type LoginAccountType = 'restaurant' | 'user';
+
 const Login = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { handleLoginSuccess } = useAuth();
+  const initialAccountTypeParam = searchParams.get('as');
+  const initialAccountType: LoginAccountType =
+    initialAccountTypeParam === 'user' ? 'user' : 'restaurant';
+
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [accountType, setAccountType] =
+    useState<LoginAccountType>(initialAccountType);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const emailPrefill = searchParams.get('email');
+  const resolvedEmail = email || emailPrefill || '';
 
   const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -29,14 +43,26 @@ const Login = () => {
     setPassword(event.target.value);
   };
 
+  const handleAccountTypeChange = (
+    event: React.MouseEvent<HTMLElement>,
+    value: LoginAccountType | null,
+  ) => {
+    if (!value) return;
+    setAccountType(value);
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
     setIsLoading(true);
 
     try {
-      const restaurant = await login({ email, password });
-      handleLoginSuccess(restaurant);
+      if (accountType === 'user') {
+        await loginUser({ email: resolvedEmail, password });
+      } else {
+        await loginRestaurant({ email: resolvedEmail, password });
+      }
+      await handleLoginSuccess();
       navigate('/');
     } catch (error) {
       setError(getUserFacingErrorMessage(error, 'Login failed'));
@@ -48,7 +74,7 @@ const Login = () => {
   return (
     <Paper sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom>
-        Restaurant Log In
+        Log In
       </Typography>
 
       {error && (
@@ -59,10 +85,25 @@ const Login = () => {
 
       <form onSubmit={handleSubmit} aria-label="log in form">
         <Stack spacing={2}>
+          <ToggleButtonGroup
+            exclusive
+            value={accountType}
+            onChange={handleAccountTypeChange}
+            aria-label="Select account type"
+            size="small"
+          >
+            <ToggleButton value="restaurant" aria-label="Restaurant account">
+              Restaurant
+            </ToggleButton>
+            <ToggleButton value="user" aria-label="User account">
+              User
+            </ToggleButton>
+          </ToggleButtonGroup>
+
           <TextField
             label="Email"
             type="email"
-            value={email}
+            value={resolvedEmail}
             onChange={handleEmailChange}
             required
             fullWidth

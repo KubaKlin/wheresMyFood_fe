@@ -12,7 +12,9 @@ import {
 } from '@mui/material';
 import CenteredSpinner from '../components/common/CenteredSpinner';
 import ErrorAlert from '../components/common/ErrorAlert';
+import { InviteLinkCard } from '../components/restaurants/InviteLinkCard';
 import { useStatisticsPage } from '../hooks/useStatisticsPage';
+import { useAuth } from '../hooks/useAuth';
 
 const getRangeLabel = (range: string) => {
   if (range === '7d') return '7 days';
@@ -21,6 +23,7 @@ const getRangeLabel = (range: string) => {
 };
 
 const Statistics = () => {
+  const { principal } = useAuth();
   const {
     ranges,
     selectedRange,
@@ -54,8 +57,13 @@ const Statistics = () => {
     return <ErrorAlert message="Statistics not available (missing data)" />;
   }
 
+  const restaurantId =
+    principal?.type === 'restaurant' ? principal.restaurantId : null;
+
   return (
     <Box>
+      {restaurantId !== null && <InviteLinkCard restaurantId={restaurantId} />}
+
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         justifyContent="space-between"

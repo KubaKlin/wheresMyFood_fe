@@ -2,6 +2,7 @@ export interface Restaurant {
   id: number;
   email: string;
   name: string;
+  inviteCode?: string | null;
 }
 
 export interface SignupParams {
@@ -14,6 +15,32 @@ export interface LoginParams {
   email: string;
   password: string;
 }
+
+export type AuthPrincipal = {
+  type: 'restaurant' | 'user';
+  id: number;
+  restaurantId: number;
+  userId?: number;
+};
+
+export interface User {
+  id: number;
+  email: string;
+  name: string;
+  restaurantId?: number;
+}
+
+export interface UserSignupParams {
+  email: string;
+  name: string;
+  password: string;
+  inviteCode: string;
+}
+
+export type RestaurantInviteInfo = {
+  inviteCode: string | null;
+  inviteUrl: string | null;
+};
 
 export type OrderStatus = 'IN_PROGRESS' | 'READY_TO_TAKE';
 

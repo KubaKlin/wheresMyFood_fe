@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   TextField,
   Button,
@@ -9,11 +9,16 @@ import {
   Stack,
   Alert,
 } from '@mui/material';
-import { signup } from '../api';
+import { signupRestaurant, signupUser } from '../api';
 import { getUserFacingErrorMessage } from '../api/errors';
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const inviteCodeParam = searchParams.get('inviteCode');
+  const inviteCode = inviteCodeParam?.trim() ?? '';
+  const isInviteSignUp = Boolean(inviteCode);
+
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -38,8 +43,14 @@ const SignUp = () => {
     setIsLoading(true);
 
     try {
-      await signup({ name, email, password });
-      navigate('/login');
+      if (isInviteSignUp) {
+        await signupUser({ name, email, password, inviteCode });
+        navigate(`/login?as=user&email=${encodeURIComponent(email)}`);
+        return;
+      }
+
+      await signupRestaurant({ name, email, password });
+      navigate('/login?as=restaurant');
     } catch (error) {
       setError(getUserFacingErrorMessage(error, 'Sign-up failed'));
     } finally {
@@ -50,7 +61,7 @@ const SignUp = () => {
   return (
     <Paper sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom>
-        Restaurant Sign Up
+        {isInviteSignUp ? 'User Sign Up' : 'Restaurant Sign Up'}
       </Typography>
 
       {error && (
@@ -62,13 +73,13 @@ const SignUp = () => {
       <form onSubmit={handleSubmit} aria-label="sign up form">
         <Stack spacing={2}>
           <TextField
-            label="Restaurant name"
+            label={isInviteSignUp ? 'Your name' : 'Restaurant name'}
             value={name}
             onChange={handleNameChange}
             required
             fullWidth
             disabled={isLoading}
-            autoComplete="organization"
+            autoComplete={isInviteSignUp ? 'name' : 'organization'}
           />
           <TextField
             label="Email"
@@ -80,6 +91,14 @@ const SignUp = () => {
             disabled={isLoading}
             autoComplete="email"
           />
+          {isInviteSignUp && (
+            <TextField
+              label="Invite code"
+              value={inviteCode}
+              disabled
+              fullWidth
+            />
+          )}
           <TextField
             label="Password"
             type="password"
@@ -93,7 +112,7 @@ const SignUp = () => {
           <Button
             type="submit"
             variant="contained"
-            disabled={isLoading}
+            disabled={isLoading || (isInviteSignUp && !inviteCode)}
             fullWidth
           >
             {isLoading ? 'Creating account...' : 'Sign Up'}
