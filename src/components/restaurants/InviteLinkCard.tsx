@@ -49,8 +49,9 @@ export const InviteLinkCard = ({ restaurantId }: InviteLinkCardProps) => {
           getUserFacingErrorMessage(error, 'Failed to load invite link'),
         );
       } finally {
-        if (!isActive) return;
-        setIsLoading(false);
+        if (isActive) {
+          setIsLoading(false);
+        }
       }
     };
 

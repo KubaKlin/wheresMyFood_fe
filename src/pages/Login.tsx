@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { ChangeEvent, FormEvent } from 'react';
+import type { ChangeEvent, FormEvent, MouseEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   TextField,
@@ -44,9 +44,10 @@ const Login = () => {
   };
 
   const handleAccountTypeChange = (
-    event: React.MouseEvent<HTMLElement>,
+    event: MouseEvent<HTMLElement>,
     value: LoginAccountType | null,
   ) => {
+    void event;
     if (!value) return;
     setAccountType(value);
   };
