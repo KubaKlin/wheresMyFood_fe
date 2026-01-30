@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { createOrder, listCurrentOrders, updateOrderStatus } from '../api';
+import { getUserFacingErrorMessage } from '../api/errors';
 import type { CreateOrderParams, Order } from '../types';
 import { getNextOrderStatus } from '../components/orders/orderStatus';
 import { useOrdersListPage } from './useOrdersListPage';
@@ -69,9 +70,9 @@ export const useOrdersCurrentPage = () => {
         setIsCreateDialogOpen(false);
         await reload();
       } catch (error) {
-        const message =
-          error instanceof Error ? error.message : 'Failed to create order';
-        setActionError(message);
+        setActionError(
+          getUserFacingErrorMessage(error, 'Failed to create order'),
+        );
       } finally {
         setIsSaving(false);
       }
@@ -87,11 +88,9 @@ export const useOrdersCurrentPage = () => {
         await updateOrderStatus(order.id, getNextOrderStatus(order.status));
         await reload();
       } catch (error) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : 'Failed to update order status';
-        setActionError(message);
+        setActionError(
+          getUserFacingErrorMessage(error, 'Failed to update order status'),
+        );
       } finally {
         setIsSaving(false);
       }

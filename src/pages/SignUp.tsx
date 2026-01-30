@@ -10,6 +10,7 @@ import {
   Alert,
 } from '@mui/material';
 import { signup } from '../api';
+import { getUserFacingErrorMessage } from '../api/errors';
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -40,9 +41,7 @@ const SignUp = () => {
       await signup({ name, email, password });
       navigate('/login');
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Sign-up failed';
-      setError(errorMessage);
+      setError(getUserFacingErrorMessage(error, 'Sign-up failed'));
     } finally {
       setIsLoading(false);
     }

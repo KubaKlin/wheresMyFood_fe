@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { createDish, deleteDish, listDishes, updateDish } from '../api';
+import { getUserFacingErrorMessage } from '../api/errors';
 import type { Dish } from '../types';
 
 type DishFormState = {
@@ -33,9 +34,7 @@ export const useDishesPage = () => {
       const data = await listDishes();
       setDishes(data);
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to load dishes';
-      setError(message);
+      setError(getUserFacingErrorMessage(error, 'Failed to load dishes'));
     } finally {
       setIsLoading(false);
     }
@@ -108,9 +107,7 @@ export const useDishesPage = () => {
       setIsCreateDialogOpen(false);
       await loadDishes();
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to create dish';
-      setError(message);
+      setError(getUserFacingErrorMessage(error, 'Failed to create dish'));
     } finally {
       setIsSaving(false);
     }
@@ -145,9 +142,7 @@ export const useDishesPage = () => {
       setDishToEdit(null);
       await loadDishes();
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to update dish';
-      setError(message);
+      setError(getUserFacingErrorMessage(error, 'Failed to update dish'));
     } finally {
       setIsSaving(false);
     }
@@ -168,9 +163,7 @@ export const useDishesPage = () => {
       setDishToDelete(null);
       await loadDishes();
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to delete dish';
-      setError(message);
+      setError(getUserFacingErrorMessage(error, 'Failed to delete dish'));
     } finally {
       setIsSaving(false);
     }

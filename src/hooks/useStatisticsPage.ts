@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getStatisticsOverview } from '../api';
+import { getUserFacingErrorMessage } from '../api/errors';
 import type { StatisticsOverviewResponse, StatisticsRange } from '../types';
 
 const RANGES: StatisticsRange[] = ['today', '7d', '30d'];
@@ -22,9 +23,7 @@ export const useStatisticsPage = () => {
       const data = await getStatisticsOverview();
       setOverview(data);
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to load statistics';
-      setError(message);
+      setError(getUserFacingErrorMessage(error, 'Failed to load statistics'));
       setOverview(null);
     } finally {
       setIsLoading(false);
