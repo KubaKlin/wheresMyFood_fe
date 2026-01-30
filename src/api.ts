@@ -1,6 +1,13 @@
 export { apiFetch } from './api/client';
 
-export { signup, login, getCurrentRestaurant, logout } from './api/auth';
+export {
+  signupRestaurant,
+  loginRestaurant,
+  signupUser,
+  loginUser,
+  getCurrentPrincipal,
+  logout,
+} from './api/auth';
 
 export { listDishes, createDish, updateDish, deleteDish } from './api/dishes';
 

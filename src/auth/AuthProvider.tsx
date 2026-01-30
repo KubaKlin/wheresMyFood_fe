@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import { getCurrentRestaurant, logout as logoutApi } from '../api';
-import type { Restaurant } from '../types';
+import { getCurrentPrincipal, logout as logoutApi } from '../api';
+import type { AuthPrincipal } from '../types';
 import { AuthContext } from './AuthContext';
 
 type AuthProviderProps = {
@@ -10,17 +10,17 @@ type AuthProviderProps = {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
+  const [principal, setPrincipal] = useState<AuthPrincipal | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const currentRestaurant = await getCurrentRestaurant();
-        setRestaurant(currentRestaurant);
+        const currentPrincipal = await getCurrentPrincipal();
+        setPrincipal(currentPrincipal);
         setIsAuthenticated(true);
       } catch {
-        setRestaurant(null);
+        setPrincipal(null);
         setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
@@ -30,10 +30,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     initializeAuth();
   }, []);
 
-  const handleLoginSuccess = useCallback((restaurantData: Restaurant) => {
-    setRestaurant(restaurantData);
-    setIsAuthenticated(true);
+  const refreshAuth = useCallback(async () => {
+    try {
+      const currentPrincipal = await getCurrentPrincipal();
+      setPrincipal(currentPrincipal);
+      setIsAuthenticated(true);
+    } catch {
+      setPrincipal(null);
+      setIsAuthenticated(false);
+    }
   }, []);
+
+  const handleLoginSuccess = useCallback(async () => {
+    await refreshAuth();
+  }, [refreshAuth]);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -41,18 +51,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } catch (error) {
       console.error('Logout failed:', error);
     } finally {
-      setRestaurant(null);
-      setIsAuthenticated(false);
-    }
-  }, []);
-
-  const refreshAuth = useCallback(async () => {
-    try {
-      const currentRestaurant = await getCurrentRestaurant();
-      setRestaurant(currentRestaurant);
-      setIsAuthenticated(true);
-    } catch {
-      setRestaurant(null);
+      setPrincipal(null);
       setIsAuthenticated(false);
     }
   }, []);
@@ -60,7 +59,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const value = useMemo(
     () => ({
       isAuthenticated,
-      restaurant,
+      principal,
       isLoading,
       handleLoginSuccess,
       handleLogout,
@@ -68,7 +67,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }),
     [
       isAuthenticated,
-      restaurant,
+      principal,
       isLoading,
       handleLoginSuccess,
       handleLogout,

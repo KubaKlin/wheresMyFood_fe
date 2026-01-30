@@ -2,13 +2,13 @@ import type { ReactElement } from 'react';
 import { render } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { AuthContext } from '../auth/AuthContext';
-import type { Restaurant } from '../types';
+import type { AuthPrincipal } from '../types';
 
 type RenderWithProvidersOptions = {
   route?: string;
   isAuthenticated?: boolean;
   isLoading?: boolean;
-  restaurant?: Restaurant | null;
+  principal?: AuthPrincipal | null;
 };
 
 export const renderWithProviders = (
@@ -17,7 +17,7 @@ export const renderWithProviders = (
     route = '/',
     isAuthenticated = true,
     isLoading = false,
-    restaurant = null,
+    principal = null,
   }: RenderWithProvidersOptions = {},
 ) => {
   return render(
@@ -26,8 +26,8 @@ export const renderWithProviders = (
         value={{
           isAuthenticated,
           isLoading,
-          restaurant,
-          handleLoginSuccess: () => {},
+          principal,
+          handleLoginSuccess: async () => {},
           handleLogout: async () => {},
           refreshAuth: async () => {},
         }}

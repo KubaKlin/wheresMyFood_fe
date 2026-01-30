@@ -1,11 +1,11 @@
 import { createContext } from 'react';
-import type { Restaurant } from '../types';
+import type { AuthPrincipal } from '../types';
 
 export type AuthContextValue = {
   isAuthenticated: boolean;
-  restaurant: Restaurant | null;
+  principal: AuthPrincipal | null;
   isLoading: boolean;
-  handleLoginSuccess: (restaurant: Restaurant) => void;
+  handleLoginSuccess: () => Promise<void>;
   handleLogout: () => Promise<void>;
   refreshAuth: () => Promise<void>;
 };

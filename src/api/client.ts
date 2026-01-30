@@ -24,14 +24,13 @@ export class ApiError extends Error {
     message: string,
     options?: { statusCode?: number; payload?: unknown; cause?: unknown },
   ) {
-    super(message);
+    super(
+      message,
+      options?.cause !== undefined ? { cause: options.cause } : undefined,
+    );
     this.name = 'ApiError';
     this.statusCode = options?.statusCode;
     this.payload = options?.payload;
-    if (options?.cause !== undefined) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (this as any).cause = options.cause;
-    }
   }
 }
 
