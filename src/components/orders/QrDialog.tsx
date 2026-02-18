@@ -56,13 +56,13 @@ const QrDialog = ({
       <DialogTitle id="order-qr-title">Client QR</DialogTitle>
       <DialogContent>
         <Stack spacing={2} pt={1}>
-          {error ? (
+          {error && (
             <Alert severity="error" role="alert">
               {error}
             </Alert>
-          ) : null}
+          )}
 
-          {!error && isLoading && !qrData ? (
+          {!error && isLoading && !qrData && (
             <Box
               display="flex"
               justifyContent="center"
@@ -71,9 +71,9 @@ const QrDialog = ({
             >
               <CircularProgress aria-label="Loading QR payload" />
             </Box>
-          ) : null}
+          )}
 
-          {qrPayload ? (
+          {qrPayload && (
             <Box display="flex" justifyContent="center">
               <Box
                 component="img"
@@ -86,7 +86,7 @@ const QrDialog = ({
                 }}
               />
             </Box>
-          ) : null}
+          )}
         </Stack>
       </DialogContent>
       <DialogActions>

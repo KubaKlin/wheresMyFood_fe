@@ -17,7 +17,7 @@ const OrdersCompleted = () => {
         Completed Orders
       </Typography>
 
-      {error ? <ErrorAlert message={error} /> : null}
+      {error && <ErrorAlert message={error} />}
 
       <OrdersList orders={orders} emptyLabel="No completed orders found" />
     </Box>

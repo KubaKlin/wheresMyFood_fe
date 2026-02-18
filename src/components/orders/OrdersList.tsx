@@ -29,11 +29,22 @@ const OrdersList = ({
   isActionsDisabled,
   renderActions,
 }: OrdersListProps) => {
+  if (orders.length === 0) {
+    return (
+      <Paper>
+        <List aria-label="orders list">
+          <ListItem>
+            <ListItemText primary={emptyLabel} />
+          </ListItem>
+        </List>
+      </Paper>
+    );
+  }
+
   return (
     <Paper>
       <List aria-label="orders list">
-        {orders.length > 0 ? (
-          orders.map((order) => (
+        {orders.map((order) => (
             <ListItem
               key={order.id}
               divider
@@ -83,12 +94,7 @@ const OrdersList = ({
                 }
               />
             </ListItem>
-          ))
-        ) : (
-          <ListItem>
-            <ListItemText primary={emptyLabel} />
-          </ListItem>
-        )}
+        ))}
       </List>
     </Paper>
   );

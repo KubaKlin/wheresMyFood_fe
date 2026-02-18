@@ -54,7 +54,7 @@ const Dishes = () => {
         </Button>
       </Box>
 
-      {error ? <ErrorAlert message={error} /> : null}
+      {error && <ErrorAlert message={error} />}
 
       <DishesTable
         dishes={dishes}

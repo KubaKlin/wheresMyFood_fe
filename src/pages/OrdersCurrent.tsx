@@ -45,7 +45,7 @@ const OrdersCurrent = () => {
         </Button>
       </Box>
 
-      {error ? <ErrorAlert message={error} /> : null}
+      {error && <ErrorAlert message={error} />}
 
       <OrdersList
         orders={orders}
