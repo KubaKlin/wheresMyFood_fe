@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { ChangeEvent } from 'react';
-import type { SelectChangeEvent } from '@mui/material';
+import { useForm } from 'react-hook-form';
+import type { RegisterOptions } from 'react-hook-form';
 import {
   addOrderItem,
   getOrderQr,
@@ -16,15 +16,22 @@ import type {
 } from '../types';
 import { getNextOrderStatus } from '../components/orders/orderStatus';
 
+export type AddDishToOrderFormValues = {
+  dishId: string;
+  quantity: number;
+};
+
+export type AddDishToOrderValidationRules = {
+  dishId: RegisterOptions<AddDishToOrderFormValues, 'dishId'>;
+  quantity: RegisterOptions<AddDishToOrderFormValues, 'quantity'>;
+};
+
 export const useOrderDetailsPage = (orderId: number) => {
   const [order, setOrder] = useState<PublicOrderStatusResponse | null>(null);
   const [dishes, setDishes] = useState<Dish[]>([]);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
-  const [selectedDishId, setSelectedDishId] = useState<string>('');
-  const [quantity, setQuantity] = useState<string>('1');
 
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
@@ -58,50 +65,94 @@ export const useOrderDetailsPage = (orderId: number) => {
     loadAll();
   }, [loadAll, orderId]);
 
-  const handleSelectedDishChange = (event: SelectChangeEvent<string>) => {
-    setSelectedDishId(event.target.value);
-  };
+  const addDishValidationRules = useMemo<AddDishToOrderValidationRules>(
+    () => ({
+      dishId: {
+        required: 'Please select a dish',
+        validate: (value) => {
+          const dishId = Number(value);
+          if (!value) {
+            return 'Please select a dish';
+          }
+          if (!Number.isInteger(dishId) || dishId <= 0) {
+            return 'Selected dish is invalid';
+          }
+          return true;
+        },
+      },
+      quantity: {
+        required: 'Quantity is required',
+        validate: (value) => {
+          if (!Number.isFinite(value)) {
+            return 'Quantity is required';
+          }
+          if (!Number.isInteger(value)) {
+            return 'Quantity must be an integer';
+          }
+          if (value < 1) {
+            return 'Quantity must be an integer ≥ 1';
+          }
+          return true;
+        },
+      },
+    }),
+    [],
+  );
 
-  const handleQuantityChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setQuantity(event.target.value);
-  };
+  const addDishForm = useForm<AddDishToOrderFormValues>({
+    defaultValues: { dishId: '', quantity: 1 },
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+    shouldFocusError: true,
+  });
 
-  const parsedQuantity = useMemo(() => Number(quantity), [quantity]);
+  const {
+    control: addDishControl,
+    handleSubmit: handleAddDishFormSubmit,
+    formState: { errors: addDishErrors },
+    reset: resetAddDishForm,
+  } = addDishForm;
 
-  const handleAddDish = useCallback(async () => {
-    setError(null);
+  const handleAddDishValidSubmit = useCallback(
+    async (values: AddDishToOrderFormValues) => {
+      setError(null);
 
-    if (!order) {
-      setError('Order not loaded yet');
-      return;
-    }
+      if (!order) {
+        setError('Order not loaded yet');
+        return;
+      }
 
-    if (!selectedDishId) {
-      setError('Please select a dish');
-      return;
-    }
+      const dishId = Number(values.dishId);
+      if (!Number.isInteger(dishId) || dishId <= 0) {
+        setError('Selected dish is invalid');
+        return;
+      }
 
-    const dishId = Number(selectedDishId);
-    if (!Number.isInteger(dishId) || dishId <= 0) {
-      setError('Selected dish is invalid');
-      return;
-    }
+      if (!Number.isInteger(values.quantity) || values.quantity < 1) {
+        setError('Quantity must be an integer ≥ 1');
+        return;
+      }
 
-    if (!Number.isInteger(parsedQuantity) || parsedQuantity < 1) {
-      setError('Quantity must be an integer ≥ 1');
-      return;
-    }
+      setIsSaving(true);
+      try {
+        await addOrderItem(orderId, { dishId, quantity: values.quantity });
+        await loadAll();
+        resetAddDishForm({ dishId: '', quantity: 1 });
+      } catch (error) {
+        setError(
+          getUserFacingErrorMessage(error, 'Failed to add dish to order'),
+        );
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [loadAll, order, orderId, resetAddDishForm],
+  );
 
-    setIsSaving(true);
-    try {
-      await addOrderItem(orderId, { dishId, quantity: parsedQuantity });
-      await loadAll();
-    } catch (error) {
-      setError(getUserFacingErrorMessage(error, 'Failed to add dish to order'));
-    } finally {
-      setIsSaving(false);
-    }
-  }, [loadAll, order, orderId, parsedQuantity, selectedDishId]);
+  const handleAddDishSubmit = useMemo(
+    () => handleAddDishFormSubmit(handleAddDishValidSubmit),
+    [handleAddDishFormSubmit, handleAddDishValidSubmit],
+  );
 
   const handleToggleStatus = useCallback(async () => {
     setError(null);
@@ -155,16 +206,15 @@ export const useOrderDetailsPage = (orderId: number) => {
     isLoading,
     error,
     isSaving,
-    selectedDishId,
-    quantity,
+    addDishControl,
+    addDishErrors,
+    addDishValidationRules,
     isQrDialogOpen,
     qrData,
     qrError,
     qrPayload,
     loadAll,
-    handleSelectedDishChange,
-    handleQuantityChange,
-    handleAddDish,
+    handleAddDishSubmit,
     handleToggleStatus,
     handleOpenQrDialog,
     handleCloseQrDialog,

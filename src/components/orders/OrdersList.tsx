@@ -45,55 +45,55 @@ const OrdersList = ({
     <Paper>
       <List aria-label="orders list">
         {orders.map((order) => (
-            <ListItem
-              key={order.id}
-              divider
-              secondaryAction={
-                <Stack direction="row" spacing={1}>
-                  <Button
-                    variant="outlined"
-                    component={Link}
-                    to={`/orders/${order.id}`}
-                    aria-label={`Open order ${order.name}`}
-                    disabled={isActionsDisabled}
-                  >
-                    Details
-                  </Button>
-                  {renderActions ? renderActions(order) : null}
+          <ListItem
+            key={order.id}
+            divider
+            secondaryAction={
+              <Stack direction="row" spacing={1}>
+                <Button
+                  variant="outlined"
+                  component={Link}
+                  to={`/orders/${order.id}`}
+                  aria-label={`Open order ${order.name}`}
+                  disabled={isActionsDisabled}
+                >
+                  Details
+                </Button>
+                {renderActions ? renderActions(order) : null}
+              </Stack>
+            }
+          >
+            <ListItemText
+              primary={
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  flexWrap="wrap"
+                >
+                  <Typography component="span" variant="subtitle1">
+                    {order.name}
+                  </Typography>
+                  <Chip
+                    size="small"
+                    label={getOrderStatusLabel(order.status)}
+                    color={
+                      order.status === 'READY_TO_TAKE' ? 'success' : 'warning'
+                    }
+                    aria-label={`Status ${getOrderStatusLabel(order.status)}`}
+                  />
                 </Stack>
               }
-            >
-              <ListItemText
-                primary={
-                  <Stack
-                    direction="row"
-                    spacing={1}
-                    alignItems="center"
-                    flexWrap="wrap"
-                  >
-                    <Typography component="span" variant="subtitle1">
-                      {order.name}
-                    </Typography>
-                    <Chip
-                      size="small"
-                      label={getOrderStatusLabel(order.status)}
-                      color={
-                        order.status === 'READY_TO_TAKE' ? 'success' : 'warning'
-                      }
-                      aria-label={`Status ${getOrderStatusLabel(order.status)}`}
-                    />
-                  </Stack>
-                }
-                secondary={
-                  <>
-                    {order.additionalInfo
-                      ? `Info: ${order.additionalInfo}`
-                      : 'No additional info'}
-                    {` • Items: ${getOrderItemsCount(order)}`}
-                  </>
-                }
-              />
-            </ListItem>
+              secondary={
+                <>
+                  {order.additionalInfo
+                    ? `Info: ${order.additionalInfo}`
+                    : 'No additional info'}
+                  {` • Items: ${getOrderItemsCount(order)}`}
+                </>
+              }
+            />
+          </ListItem>
         ))}
       </List>
     </Paper>

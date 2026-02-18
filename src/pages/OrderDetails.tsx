@@ -20,16 +20,15 @@ const OrderDetails = () => {
     isLoading,
     error,
     isSaving,
-    selectedDishId,
-    quantity,
+    addDishControl,
+    addDishErrors,
+    addDishValidationRules,
     isQrDialogOpen,
     qrData,
     qrError,
     qrPayload,
     loadAll,
-    handleSelectedDishChange,
-    handleQuantityChange,
-    handleAddDish,
+    handleAddDishSubmit,
     handleToggleStatus,
     handleOpenQrDialog,
     handleCloseQrDialog,
@@ -109,12 +108,11 @@ const OrderDetails = () => {
 
       <AddDishToOrderCard
         dishes={dishes}
-        selectedDishId={selectedDishId}
-        quantity={quantity}
         isSaving={isSaving}
-        onSelectedDishChange={handleSelectedDishChange}
-        onQuantityChange={handleQuantityChange}
-        onAdd={handleAddDish}
+        control={addDishControl}
+        errors={addDishErrors}
+        validationRules={addDishValidationRules}
+        onAdd={handleAddDishSubmit}
       />
 
       <OrderItemsCard items={order.items} />
