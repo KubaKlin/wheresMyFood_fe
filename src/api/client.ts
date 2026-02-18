@@ -12,10 +12,6 @@ type ApiFetchOptions = {
 export const SERVICE_UNAVAILABLE_MESSAGE =
   "We're sorry, currently the application is down. We are working on fixing it. Please check again soon.";
 
-type BackendErrorPayload = {
-  message?: unknown;
-};
-
 export class ApiError extends Error {
   public readonly statusCode?: number;
   public readonly payload?: unknown;
@@ -34,10 +30,13 @@ export class ApiError extends Error {
   }
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
 const getBackendMessage = (payload: unknown): string | null => {
-  if (!payload || typeof payload !== 'object') return null;
-  const messageField =
-    'message' in payload ? (payload as BackendErrorPayload).message : undefined;
+  if (!isRecord(payload)) return null;
+
+  const messageField = payload.message;
 
   if (typeof messageField === 'string' && messageField.trim())
     return messageField;

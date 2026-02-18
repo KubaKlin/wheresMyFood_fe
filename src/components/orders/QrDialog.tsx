@@ -82,8 +82,7 @@ const QrDialog = ({
                 sx={{ width: 320, height: 320, maxWidth: '100%' }}
                 onError={(event) => {
                   // Hide broken image icon; link below remains usable.
-                  (event.currentTarget as HTMLImageElement).style.display =
-                    'none';
+                  event.currentTarget.style.display = 'none';
                 }}
               />
             </Box>

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import { getCurrentPrincipal, logout as logoutApi } from '../api';
+import { getCurrentPrincipal, logout } from '../api';
 import type { AuthPrincipal } from '../types';
 import { AuthContext } from './AuthContext';
 
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const handleLogout = useCallback(async () => {
     try {
-      await logoutApi();
+      await logout();
     } catch (error) {
       console.error('Logout failed:', error);
     } finally {
