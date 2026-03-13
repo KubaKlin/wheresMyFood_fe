@@ -12,6 +12,8 @@ const api = vi.hoisted(() => ({
   listCurrentOrders: vi.fn(),
   createOrder: vi.fn(),
   updateOrderStatus: vi.fn(),
+  listDishes: vi.fn(),
+  addOrderItem: vi.fn(),
 }));
 
 vi.mock('../api', () => api);
@@ -22,6 +24,8 @@ describe('the OrdersCurrent (integration)', () => {
   });
 
   it('loads current orders, can create, and can toggle status', async () => {
+    api.listDishes.mockResolvedValueOnce([]);
+
     api.listCurrentOrders
       .mockResolvedValueOnce([
         {
