@@ -14,10 +14,20 @@ const OrdersCurrent = () => {
     isSaving,
     isCreateDialogOpen,
     createForm,
+    createDishes,
+    isDishesLoading,
+    createDraftDish,
+    createDraftItems,
+    createError,
     handleOpenCreateDialog,
     handleCloseCreateDialog,
     handleCreateNameChange,
     handleCreateAdditionalInfoChange,
+    handleCreateDraftDishIdChange,
+    handleCreateDraftDishQuantityChange,
+    handleAddDraftDish,
+    handleRemoveDraftDish,
+    handleDraftItemQuantityChange,
     handleCreateSubmit,
     handleToggleStatus,
   } = useOrdersCurrentPage();
@@ -66,10 +76,20 @@ const OrdersCurrent = () => {
       <CreateOrderDialog
         open={isCreateDialogOpen}
         isSaving={isSaving}
+        isDishesLoading={isDishesLoading}
         formState={createForm}
+        dishes={createDishes}
+        draftDish={createDraftDish}
+        draftItems={createDraftItems}
+        errorMessage={createError}
         onClose={handleCloseCreateDialog}
         onNameChange={handleCreateNameChange}
         onAdditionalInfoChange={handleCreateAdditionalInfoChange}
+        onDraftDishIdChange={handleCreateDraftDishIdChange}
+        onDraftDishQuantityChange={handleCreateDraftDishQuantityChange}
+        onAddDraftDish={handleAddDraftDish}
+        onRemoveDraftDish={handleRemoveDraftDish}
+        onDraftItemQuantityChange={handleDraftItemQuantityChange}
         onSubmit={handleCreateSubmit}
       />
     </Box>
